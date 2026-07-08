@@ -229,9 +229,71 @@ const STORE = GS_API ? _gs() : ((typeof window!=='undefined'&&window.storage)?wi
 const STORE_MODE = GS_API ? 'sheets' : ((typeof window!=='undefined'&&window.storage)?'claude':'local');
 const SHARED_MODE = STORE_MODE!=='local';
 const MODE_LABEL = STORE_MODE==='sheets'?'Sincronizado (Sheets)':STORE_MODE==='claude'?'Sincronizado (compartido)':'Guardado local';
+/* ---------- fuente viva de turnos: hoja normalizada (1 fila = 1 turno) ----------
+   Los TURNOS se administran en la hoja FUENTE NORMALIZADA y siempre mandan sobre
+   el seed y sobre ediciones guardadas. Requiere que la hoja esté compartida como
+   "Cualquier persona con el enlace: Lector". Si la hoja no responde, el dashboard
+   sigue funcionando con el seed embebido + Store (sin romperse). */
+const SHEET_SRC_ID='1nc3RrnZ_8B7QIsG0GXUloPlaEJpOYpXRXNt-sTRJa5M';
+let DATA_SRC_LABEL='Datos: seed local';
+function parseCSV(text){
+  const rows=[];let row=[],cur='',q=false;
+  for(let i=0;i<text.length;i++){const ch=text[i];
+    if(q){ if(ch==='"'){ if(text[i+1]==='"'){cur+='"';i++;} else q=false; } else cur+=ch; }
+    else{ if(ch==='"')q=true;
+      else if(ch===','){row.push(cur);cur='';}
+      else if(ch==='\n'||ch==='\r'){ if(ch==='\r'&&text[i+1]==='\n')i++; row.push(cur);cur=''; if(row.some(c=>c!==''))rows.push(row); row=[]; }
+      else cur+=ch; } }
+  if(cur!==''||row.length){row.push(cur);if(row.some(c=>c!==''))rows.push(row);}
+  return rows;
+}
+async function fetchSheetShifts(){
+  const url='https://docs.google.com/spreadsheets/d/'+SHEET_SRC_ID+'/gviz/tq?tqx=out:csv&_='+Date.now();
+  const r=await fetch(url,{cache:'no-store'});
+  if(!r.ok)throw new Error('sheet http '+r.status);
+  const rows=parseCSV(await r.text());
+  if(rows.length<2)throw new Error('sheet vacía');
+  const H=rows[0].map(h=>h.trim().toUpperCase());
+  const col=n=>H.findIndex(h=>h.indexOf(n)>=0);
+  const iCl=col('CLUSTER'),iRz=col('RAZON'),iName=col('CLIENTE'),iCode=col('TRESS'),
+        iRng=col('HORARIO'),iDays=col('DIAS'),iHrs=col('HORAS'),iBrk=col('DESCANSO'),
+        iCls=col('CLASIFIC'),iVer=col('VERIFIC'),iNotes=col('NOTAS');
+  if(iName<0||iRng<0||iHrs<0)throw new Error('encabezados no reconocidos');
+  const map={};
+  for(let k=1;k<rows.length;k++){const r0=rows[k];const name=(r0[iName]||'').trim();if(!name)continue;
+    const key=name.toLowerCase();
+    if(!map[key])map[key]={name,cluster:(r0[iCl]||'').trim(),razon:iRz>=0?(r0[iRz]||'').trim():'',notes:iNotes>=0?(r0[iNotes]||'').trim():'',shifts:[]};
+    const cls=(iCls>=0?(r0[iCls]||''):'').trim();
+    map[key].shifts.push({
+      code:(iCode>=0?(r0[iCode]||''):'').trim()||('T'+(map[key].shifts.length+1)),
+      weeklyHours:parseFloat((r0[iHrs]||'').replace(',','.'))||0,
+      daysPerWeek:parseInt(r0[iDays]||'5',10)||5,
+      range:(r0[iRng]||'').trim(),
+      break:iBrk>=0?(r0[iBrk]||'').trim():'',
+      classification:['Diurna','Mixta','Nocturna'].includes(cls)?cls:'Diurna',
+      hc:null,
+      verified:iVer>=0?((r0[iVer]||'').trim().toUpperCase().indexOf('S')===0):true
+    });
+    if(iNotes>=0&&(r0[iNotes]||'').trim()&&!map[key].notes)map[key].notes=(r0[iNotes]||'').trim();
+  }
+  return map;
+}
+function applySheetShifts(map){
+  let matched=0,created=0;
+  const seen=new Set();
+  DATA.forEach(c=>{const m=map[c.name.trim().toLowerCase()];
+    if(m){c.shifts=JSON.parse(JSON.stringify(m.shifts));if(m.notes)c.notes=m.notes;if(m.razon&&!c.razon)c.razon=m.razon;
+      if(c.cluster==='Por confirmar'&&m.cluster)c.cluster=m.cluster; seen.add(c.name.trim().toLowerCase());matched++;}});
+  let nid=Math.max(0,...DATA.map(c=>+c.id||0))+1;
+  Object.keys(map).forEach(k=>{ if(seen.has(k))return; const m=map[k];
+    DATA.push({id:nid++,cluster:m.cluster||'Por confirmar',name:m.name,hc:0,union:0,bd:'',razon:m.razon||'',dailySalary:null,burden:0.35,shifts:JSON.parse(JSON.stringify(m.shifts)),status:'Sin iniciar',supervisor:'',notes:m.notes||'Cliente creado desde hoja fuente — asignar cluster/HC.'});created++; });
+  return{matched,created};
+}
+function normalizeShifts(){
+  DATA.forEach(c=>c.shifts.forEach(s=>{ if(s.mealMin==null)s.mealMin=parseMeal(s.break); if(s.mealCounts==null)s.mealCounts=(s.mealMin<60); if(!s.plan)s.plan={}; if(s.startMin==null)s.startMin=parseStart(s.range); }));
+}
 async function load(){
   DATA=JSON.parse(JSON.stringify(SEED.clients));
-  DATA.forEach(c=>c.shifts.forEach(s=>{ if(s.mealMin==null)s.mealMin=parseMeal(s.break); if(s.mealCounts==null)s.mealCounts=(s.mealMin<60); if(!s.plan)s.plan={}; if(s.startMin==null)s.startMin=parseStart(s.range); }));
   try{
     const r=await STORE.list('c:',true);
     if(r&&r.keys&&r.keys.length){
@@ -241,6 +303,17 @@ async function load(){
       }
     }
   }catch(e){console.log('sin almacenamiento aún',e)}
+  try{
+    const map=await fetchSheetShifts();
+    const res=applySheetShifts(map);
+    DATA_SRC_LABEL='Turnos: hoja fuente ✓ ('+res.matched+' clientes, +'+res.created+' nuevos)';
+    console.log(DATA_SRC_LABEL);
+  }catch(e){
+    DATA_SRC_LABEL='Turnos: seed local (hoja fuente no disponible)';
+    console.warn('No se pudo leer la hoja fuente normalizada:',e);
+  }
+  normalizeShifts();
+  const st=document.getElementById('saveTxt');if(st)st.title=DATA_SRC_LABEL;
 }
 async function saveClient(c){
   try{await STORE.set('c:'+c.id,JSON.stringify(c),true);flashSaved();}catch(e){console.log('save err',e)}
