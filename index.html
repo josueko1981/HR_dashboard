@@ -152,6 +152,7 @@
   .sched{border-collapse:collapse;width:100%;margin:5px 0;table-layout:fixed}
   .sched th,.sched td{border:1px solid var(--line);padding:5px 6px;text-align:center;font-size:11.5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
   .sched th{background:#F2F5F7;font-weight:600;color:var(--tx2);font-size:10px;text-transform:uppercase;letter-spacing:.3px}
+  .sched tr.sdh{position:static;background:none;color:inherit;padding:0;display:table-row}
   .sched .hr td{font-family:var(--mono);font-weight:700}
   .sched .tm td{font-family:var(--mono);color:var(--tx2);font-size:10.5px}
   .sched td.over{background:var(--warn-s);color:#9a5d05}
@@ -612,7 +613,7 @@ function prodWeek(daysArr,mealMin,counts){return counts?daysArr.reduce((a,b)=>a+
 function scheduleTable(start,daysArr,mealMin,counts,restCount){
   const D=daysArr.length,R=restCount||0,N=D+R+1;
   let cg='<colgroup>';for(let i=0;i<N-1;i++)cg+='<col style="width:'+(100/(N)).toFixed(2)+'%">';cg+='<col style="width:'+(100/N).toFixed(2)+'%"></colgroup>';
-  let hh='<tr class="dh">',hr='<tr class="hr">',tm='<tr class="tm">';
+  let hh='<tr class="sdh">',hr='<tr class="hr">',tm='<tr class="tm">';
   const tot=r1(daysArr.reduce((a,b)=>a+b,0));
   for(let i=0;i<D;i++){
     const oh=daysArr[i];const exit=dayExitMin(start,oh,mealMin,counts);
