@@ -738,11 +738,34 @@ function computeBlocks(c,d){
   // cost summary (secondary)
   const cs=costSummary(c,dy);if(cs)host.appendChild(cs);
 }
+function metPanel(c,year,r){
+  const met=el('<details style="margin-top:12px;border:1px solid var(--line);border-radius:9px;background:#fff"><summary style="cursor:pointer;padding:10px 12px;font-weight:700;font-size:13px">📐 Metodología de cálculo — auditable'+(r&&r.priced?', con los números de este cliente':' (fórmulas)')+'</summary></details>');
+  const mb=el('<div style="padding:4px 14px 14px;font-size:13px;line-height:1.7"></div>');
+  const sh0=r?c.shifts.map(s=>({s,r:calcShift(c,s,year)})).find(x=>x.r.gapPerHead>0&&x.r.Sd):null;
+  const burden=+c.burden||0.35;
+  if(sh0){
+    const {s,r:cs}=sh0;
+    mb.appendChild(el('<div><b>Paso 1 · Cuota por hora sobre la jornada reducida.</b> El salario diario se respeta íntegro (la reforma prohíbe reducirlo); al haber menos horas, cada hora "vale" más:<br><span style="font-family:var(--mono);background:#F5F6F8;padding:2px 8px;border-radius:6px;display:inline-block;margin:4px 0">cuota = salario diario × días/sem ÷ tope '+year+' = '+fmtM(cs.Sd)+' × '+cs.D+' ÷ '+cs.cap+' = <b>'+fmtM(cs.cuotaNueva)+'/h</b></span> <span class="small">(turno '+(s.code||'')+')</span></div>'));
+    mb.appendChild(el('<div style="margin-top:8px"><b>Paso 2 · Costo de la hora extra doble</b> (Art. 67: se paga al 200%) más carga social:<br><span style="font-family:var(--mono);background:#F5F6F8;padding:2px 8px;border-radius:6px;display:inline-block;margin:4px 0">hora extra = 2 × '+fmtM(cs.cuotaNueva)+' × (1 + '+burden+') = <b>'+fmtM(cs.otPerHour)+'</b></span></div>'));
+    mb.appendChild(el('<div style="margin-top:8px"><b>Paso 3 · Ruta Tiempo Extra (anual).</b> Por cada turno: brecha/persona (h/sem que exceden el tope, limitadas al máximo legal de OT: '+OTCAP[year]+' h en '+year+') × HC del turno × costo de hora extra × 52 semanas. Suma de turnos = <b>'+fmtMk(r.otAnnual)+'/año</b>.'+(r.otFeasibleAll?'':' ⚠ En este cliente la brecha excede el tope legal de OT: la parte no cubrible obliga plantilla.')+'</div>'));
+    mb.appendChild(el('<div style="margin-top:8px"><b>Paso 4 · Ruta Plantilla (anual).</b> Plazas nuevas = ⌈brecha total ÷ tope '+year+'⌉ = ⌈'+fmtN(r.gapTot)+' ÷ '+RAMP.Diurna[year]+'⌉ = <b>'+r.heads+' plaza(s)</b>. Costo = plazas × salario diario × 7 días (salario se paga por semana completa, incl. descanso Art. 69) × (1+carga) × 52 = <b>'+fmtMk(r.headAnnual)+'/año</b>.</div>'));
+    mb.appendChild(el('<div style="margin-top:8px"><b>Paso 5 · Barra de Mezcla.</b> Interpola linealmente entre ambas rutas: <span style="font-family:var(--mono)">costo = p% × OT + (100−p)% × Plantilla</span>. Ejemplo al '+(c.mixPct==null?50:c.mixPct)+'%: '+fmtMk(r.otAnnual*(c.mixPct==null?50:c.mixPct)/100+r.headAnnual*(100-(c.mixPct==null?50:c.mixPct))/100)+'/año. Representa cubrir esa fracción de la brecha con extra y el resto con contrataciones.</div>'));
+  } else {
+    mb.appendChild(el('<div><b>Paso 1 · Cuota por hora sobre la jornada reducida:</b> <span style="font-family:var(--mono)">cuota = salario diario × días/sem ÷ tope del año</span>. El salario diario no se reduce (mandato de la reforma), por lo que cada hora ordinaria se encarece al bajar el tope.</div>'));
+    mb.appendChild(el('<div style="margin-top:6px"><b>Paso 2 · Hora extra doble (Art. 67):</b> <span style="font-family:var(--mono)">2 × cuota × (1 + carga social)</span>.</div>'));
+    mb.appendChild(el('<div style="margin-top:6px"><b>Paso 3 · Ruta Tiempo Extra anual:</b> <span style="font-family:var(--mono)">Σ turnos [ min(brecha h/sem, tope OT del año) × HC × hora extra ] × 52</span>. Tope OT: 9h (2027) → 10 → 11 → 12 (2030).</div>'));
+    mb.appendChild(el('<div style="margin-top:6px"><b>Paso 4 · Ruta Plantilla anual:</b> <span style="font-family:var(--mono)">⌈brecha total ÷ tope⌉ plazas × salario × 7 días × (1+carga) × 52</span>.</div>'));
+    mb.appendChild(el('<div style="margin-top:6px"><b>Paso 5 · Barra de Mezcla:</b> <span style="font-family:var(--mono)">p% × OT + (100−p)% × Plantilla</span>.</div>'));
+    mb.appendChild(el('<div class="small" style="margin-top:8px">Captura el <b>salario diario</b> (del cliente o por turno) y el <b>HC por turno</b> para ver estos pasos con los números reales de '+c.name+'.</div>'));
+  }
+  mb.appendChild(el('<div class="note info" style="margin-top:10px"><b>Supuestos declarados:</b> (1) salario por turno si está capturado, si no el general del cliente — con la nómina real por puesto la precisión sube; (2) carga social como factor único editable ('+Math.round(burden*100)+'%) — sustituible por el full-burden real de la hoja de costos; (3) plazas redondeadas hacia arriba (no hay medias personas); (4) no incluye reclutamiento, capacitación ni curva de aprendizaje — sumarlos favorece más al tiempo extra en horizontes cortos; (5) el extra es techo legal, no herramienta permanente (Arts. 66-68).</div>'));
+  met.appendChild(mb);return met;
+}
 function costSummary(c,year){
   const r=calcClient(c,year);
-  if(!r.hasGap)return el('<div class="note" style="background:var(--ok-s);border-color:#bfe6d3;color:#0a7a54;margin-top:14px">Sin brecha en '+year+': la jornada actual ya cumple el tope.</div>');
+  if(!r.hasGap){const w=el('<div></div>');w.appendChild(el('<div class="note" style="background:var(--ok-s);border-color:#bfe6d3;color:#0a7a54;margin-top:14px">Sin brecha en '+year+': la jornada actual ya cumple el tope.</div>'));w.appendChild(metPanel(c,year,null));return w;}
   const box=el('<div class="card" style="margin-top:14px;background:#FAFBFC"><h3>Impacto financiero preliminar — '+year+'</h3></div>');
-  if(!r.priced){box.appendChild(el('<div class="small">Captura <b>salario diario</b> y <b>HC por turno</b> arriba para costear. La brecha a reponer es <b>'+fmtN(r.gapTot)+' h/sem</b> (≈ '+fmtN(Math.round(r.gapTot/RAMP.Diurna[year]))+' FTE).</div>'));return box;}
+  if(!r.priced){box.appendChild(el('<div class="small">Captura <b>salario diario</b> y <b>HC por turno</b> arriba para costear. La brecha a reponer es <b>'+fmtN(r.gapTot)+' h/sem</b> (≈ '+fmtN(Math.round(r.gapTot/RAMP.Diurna[year]))+' FTE).</div>'));box.appendChild(metPanel(c,year,null));return box;}
   let refOT=null,refHead=null;c.shifts.forEach(s=>{const cs=calcShift(c,s,year);if(cs.gapPerHead>0&&refOT==null){refOT=cs.otPerHour;refHead=cs.headPerYr;}});
   box.appendChild(el('<div class="small" style="margin-bottom:8px">Reponer <b>'+fmtN(r.gapTot)+' h/sem</b> · full-burden por hora extra <b>'+fmtM(refOT)+'</b> · por plaza/año <b>'+fmtMk(refHead)+'</b></div>'));
   const routes=el('<div class="routes"></div>');
@@ -756,22 +779,7 @@ function costSummary(c,year){
   const ch=el('<div style="margin-top:10px;display:flex;gap:6px;align-items:center;flex-wrap:wrap"><span class="small">Ruta para roll-up:</span></div>');
   [['auto','Óptima'],['ot','Extra'],['headcount','Plantilla'],['mix','Mezcla']].forEach(([k,t])=>{const b=el('<div class="chip '+((c.path||'auto')===k?'on':'')+'">'+t+'</div>');b.onclick=()=>{c.path=k;persist(c);const d=document.querySelector('.draw');if(d)computeBlocks(c,d);};ch.appendChild(b);});
   box.appendChild(ch);
-  // ---- metodología auditable (para dirección y clientes) ----
-  const met=el('<details style="margin-top:12px;border:1px solid var(--line);border-radius:9px;background:#fff"><summary style="cursor:pointer;padding:10px 12px;font-weight:700;font-size:13px">📐 Metodología de cálculo — auditable, con los números de este cliente</summary></details>');
-  const mb=el('<div style="padding:4px 14px 14px;font-size:13px;line-height:1.7"></div>');
-  const sh0=c.shifts.map(s=>({s,r:calcShift(c,s,year)})).find(x=>x.r.gapPerHead>0&&x.r.Sd);
-  if(sh0){
-    const {s,r:cs}=sh0;const burden=+c.burden||0.35;
-    mb.appendChild(el('<div><b>Paso 1 · Cuota por hora sobre la jornada reducida.</b> El salario diario se respeta íntegro (la reforma prohíbe reducirlo); al haber menos horas, cada hora "vale" más:<br><span style="font-family:var(--mono);background:#F5F6F8;padding:2px 8px;border-radius:6px;display:inline-block;margin:4px 0">cuota = salario diario × días/sem ÷ tope '+year+' = '+fmtM(cs.Sd)+' × '+cs.D+' ÷ '+cs.cap+' = <b>'+fmtM(cs.cuotaNueva)+'/h</b></span> <span class="small">(turno '+(s.code||'')+')</span></div>'));
-    mb.appendChild(el('<div style="margin-top:8px"><b>Paso 2 · Costo de la hora extra doble</b> (Art. 67: se paga al 200%) más carga social:<br><span style="font-family:var(--mono);background:#F5F6F8;padding:2px 8px;border-radius:6px;display:inline-block;margin:4px 0">hora extra = 2 × '+fmtM(cs.cuotaNueva)+' × (1 + '+burden+') = <b>'+fmtM(cs.otPerHour)+'</b></span></div>'));
-    mb.appendChild(el('<div style="margin-top:8px"><b>Paso 3 · Ruta Tiempo Extra (anual).</b> Por cada turno: brecha/persona (h/sem que exceden el tope, limitadas al máximo legal de OT: '+OTCAP[year]+' h en '+year+') × HC del turno × costo de hora extra × 52 semanas. Suma de turnos = <b>'+fmtMk(r.otAnnual)+'/año</b>.'+(r.otFeasibleAll?'':' ⚠ En este cliente la brecha excede el tope legal de OT: la parte no cubrible obliga plantilla.')+'</div>'));
-    mb.appendChild(el('<div style="margin-top:8px"><b>Paso 4 · Ruta Plantilla (anual).</b> Plazas nuevas = ⌈brecha total ÷ tope '+year+'⌉ = ⌈'+fmtN(r.gapTot)+' ÷ '+RAMP.Diurna[year]+'⌉ = <b>'+r.heads+' plaza(s)</b>. Costo = plazas × salario diario × 7 días (salario se paga por semana completa, incl. descanso Art. 69) × (1+carga) × 52 = <b>'+fmtMk(r.headAnnual)+'/año</b>.</div>'));
-    mb.appendChild(el('<div style="margin-top:8px"><b>Paso 5 · Barra de Mezcla.</b> Interpola linealmente entre ambas rutas: <span style="font-family:var(--mono)">costo = p% × OT + (100−p)% × Plantilla</span>. Ejemplo al '+(c.mixPct==null?50:c.mixPct)+'%: '+fmtMk(r.otAnnual*(c.mixPct==null?50:c.mixPct)/100+r.headAnnual*(100-(c.mixPct==null?50:c.mixPct))/100)+'/año. Representa cubrir esa fracción de la brecha con extra y el resto con contrataciones.</div>'));
-    mb.appendChild(el('<div class="note info" style="margin-top:10px"><b>Supuestos declarados:</b> (1) salario por turno si está capturado, si no el general del cliente — con la nómina real por puesto la precisión sube; (2) carga social como factor único editable ('+Math.round(burden*100)+'%) — sustituible por el full-burden real de la hoja de costos; (3) plazas redondeadas hacia arriba (no hay medias personas); (4) no incluye costos de reclutamiento, capacitación ni curva de aprendizaje — sumarlos favorece más al tiempo extra en horizontes cortos; (5) el extra es techo legal, no herramienta permanente (Arts. 66-68).</div>'));
-  } else {
-    mb.appendChild(el('<div class="small">Captura salario (del cliente o por turno) para ver la metodología con números reales.</div>'));
-  }
-  met.appendChild(mb);box.appendChild(met);
+  box.appendChild(metPanel(c,year,r));
   box.appendChild(el('<div class="note" style="margin-top:10px">El extra no sustituye horas ordinarias de forma permanente (Art. 66–68); para la reducción estructural la ruta sostenible es plantilla/rediseño + productividad. Valida el convenio Art. 59 con tu abogado.</div>'));
   return box;
 }
