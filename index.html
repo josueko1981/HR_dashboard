@@ -73,7 +73,7 @@
   .gapwarn{color:var(--bad);font-weight:600}.gapok{color:var(--ok)}
   /* detail */
   .ov{position:absolute;inset:0;background:rgba(14,23,38,.42);display:flex;justify-content:flex-end;z-index:30}
-  .draw{width:min(720px,94%);background:var(--bg);height:100%;overflow:auto;box-shadow:-10px 0 40px rgba(0,0,0,.2);animation:sl .18s ease}
+  .draw{width:min(880px,96%);background:var(--bg);height:100%;overflow:auto;box-shadow:-10px 0 40px rgba(0,0,0,.2);animation:sl .18s ease}
   @keyframes sl{from{transform:translateX(24px);opacity:.6}to{transform:none;opacity:1}}
   .dh{position:sticky;top:0;background:var(--ink);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:flex-start;z-index:2}
   .dh h2{margin:0;font-size:17px}.dh .meta{color:var(--rail-mut);font-size:12px;margin-top:4px}
@@ -87,8 +87,13 @@
   .fld input,.fld select,.fld textarea{width:100%;font-family:var(--sans);font-size:13px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:#fff;color:var(--tx)}
   .fld .pre{position:relative}.fld .pre span{position:absolute;left:10px;top:9px;color:var(--tx3);font-size:12px}
   .fld .pre input{padding-left:24px;font-family:var(--mono)}
-  .shtbl td,.shtbl th{padding:7px 8px;font-size:13px}
-  .shtbl input,.shtbl select{width:100%;font-size:13px;padding:5px 6px;border:1px solid var(--line);border-radius:6px;font-family:var(--mono)}
+  .shwrap{overflow-x:auto}
+  .shtbl{min-width:640px}
+  .shtbl td,.shtbl th{padding:7px 5px;font-size:13px;white-space:nowrap}
+  .shtbl input,.shtbl select{width:100%;font-size:13px;padding:5px 5px;border:1px solid var(--line);border-radius:6px;font-family:var(--mono);text-align:center}
+  .shtbl select{font-family:var(--sans);min-width:88px;text-align:left}
+  .shtbl input[type=number]{-moz-appearance:textfield;appearance:textfield}
+  .shtbl input[type=number]::-webkit-outer-spin-button,.shtbl input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
   .ramp{display:flex;gap:8px;margin:4px 0 2px}
   .step{flex:1;border:1px solid var(--line);border-radius:8px;padding:8px;text-align:center;background:#fff}
   .step.active{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc-s)}
@@ -396,7 +401,21 @@ function render(){
   else sc.appendChild(assumpEl());
   main.appendChild(sc);
   root.appendChild(main);
-  if(STATE.open!=null)root.appendChild(detailEl(DATA.find(c=>c.id===STATE.open)));
+  if(STATE.open!=null){
+    try{
+      const cli=DATA.find(c=>c.id===STATE.open);
+      if(!cli)throw new Error('Cliente id='+STATE.open+' no encontrado en DATA');
+      root.appendChild(detailEl(cli));
+    }catch(err){
+      console.error('Error al abrir detalle:',err);
+      const ov=el('<div class="ov"></div>');ov.onclick=e=>{if(e.target===ov){STATE.open=null;render();}};
+      const d=el('<div class="draw"></div>');
+      d.appendChild(el('<div class="dh"><div><h2>⚠️ Error al abrir el detalle</h2><div class="meta">El dashboard sigue funcionando; este cliente tiene un dato que rompe la vista.</div></div><button id="clsErr">✕</button></div>'));
+      d.appendChild(el('<div class="dbody"><div class="card"><h3>Detalle técnico</h3><pre style="white-space:pre-wrap;font-size:12px;color:#9A1001">'+String(err&&err.stack||err).replace(/</g,'&lt;')+'</pre><p style="font-size:13px;color:#5A6679">Copia este mensaje y compártelo para corregir el dato de origen.</p></div></div>'));
+      ov.appendChild(d);root.appendChild(ov);
+      setTimeout(()=>{const b=document.getElementById('clsErr');if(b)b.onclick=()=>{STATE.open=null;render();};},0);
+    }
+  }
 }
 function railEl(){
   const r=el('<div class="rail"></div>');
@@ -555,26 +574,26 @@ function detailEl(c){
   c1.appendChild(g1);c1.appendChild(g2);body.appendChild(c1);
   // shifts
   const c2=el('<div class="card"><h3>Jornadas actuales — verifica, captura HC y comida</h3></div>');
-  const sht=el('<table class="shtbl"><thead><tr><th>Código</th><th>Entrada</th><th>Días</th><th>H/sem</th><th>Clase</th><th>Comida</th><th>Computa</th><th>HC</th><th>$/día</th><th>✓</th><th></th></tr></thead><tbody></tbody></table>');
+  const shw=el('<div class="shwrap"></div>');const sht=el('<table class="shtbl"><thead><tr><th>Código</th><th>Entrada</th><th>Días</th><th>H/sem</th><th>Clase</th><th>Comida</th><th>Computa</th><th>HC</th><th>$/día</th><th>✓</th><th></th></tr></thead><tbody></tbody></table>');
   const tb=sht.querySelector('tbody');
   c.shifts.forEach((s,i)=>{
     const tr=el('<tr></tr>');
     tr.appendChild(tdInput(c,i,'code',s.code,'text',80));
-    const tde=el('<td></td>');const ei=el('<input type="text" style="max-width:60px"/>');ei.value=fmtClock(s.startMin??parseStart(s.range));ei.onchange=ev=>{s.startMin=parseStart(ev.target.value);persist(c);computeBlocks(c,d);};tde.appendChild(ei);tr.appendChild(tde);
-    tr.appendChild(tdInput(c,i,'daysPerWeek',s.daysPerWeek,'number',42));
-    tr.appendChild(tdInput(c,i,'weeklyHours',s.weeklyHours,'number',50));
+    const tde=el('<td></td>');const ei=el('<input type="text" style="max-width:64px"/>');ei.value=fmtClock(s.startMin??parseStart(s.range));ei.onchange=ev=>{s.startMin=parseStart(ev.target.value);persist(c);computeBlocks(c,d);};tde.appendChild(ei);tr.appendChild(tde);
+    tr.appendChild(tdInput(c,i,'daysPerWeek',s.daysPerWeek,'number',48));
+    tr.appendChild(tdInput(c,i,'weeklyHours',s.weeklyHours,'number',58));
     const tdc=el('<td></td>');const sel=el('<select><option>Diurna</option><option>Mixta</option><option>Nocturna</option></select>');sel.value=s.classification;sel.onchange=e=>{s.classification=e.target.value;persist(c);computeBlocks(c,d);};tdc.appendChild(sel);tr.appendChild(tdc);
-    const tdm=el('<td></td>');const mi=el('<input type="number" style="max-width:48px"/>');mi.value=s.mealMin??60;mi.onchange=e=>{s.mealMin=+e.target.value;persist(c);computeBlocks(c,d);};tdm.appendChild(mi);tr.appendChild(tdm);
+    const tdm=el('<td></td>');const mi=el('<input type="number" style="max-width:56px"/>');mi.value=s.mealMin??60;mi.onchange=e=>{s.mealMin=+e.target.value;persist(c);computeBlocks(c,d);};tdm.appendChild(mi);tr.appendChild(tdm);
     const tdco=el('<td style="text-align:center"></td>');const co=el('<input type="checkbox" title="¿La comida cuenta como tiempo trabajado?"/>');co.checked=!!s.mealCounts;co.onchange=e=>{s.mealCounts=e.target.checked;persist(c);computeBlocks(c,d);};tdco.appendChild(co);tr.appendChild(tdco);
-    tr.appendChild(tdInput(c,i,'hc',s.hc??'','number',50));
-    const tds=el('<td></td>');const si=el('<input type="number" style="max-width:70px" placeholder="'+(c.dailySalary||'cliente')+'" title="Salario diario específico de este turno/puesto. Vacío = usa el salario general del cliente."/>');si.value=s.salary??'';si.onchange=e=>{s.salary=e.target.value===''?null:+e.target.value;persist(c);computeBlocks(c,d);};tds.appendChild(si);tr.appendChild(tds);
+    tr.appendChild(tdInput(c,i,'hc',s.hc??'','number',58));
+    const tds=el('<td></td>');const si=el('<input type="number" style="max-width:84px" placeholder="'+(c.dailySalary||'cliente')+'" title="Salario diario específico de este turno/puesto. Vacío = usa el salario general del cliente."/>');si.value=s.salary??'';si.onchange=e=>{s.salary=e.target.value===''?null:+e.target.value;persist(c);computeBlocks(c,d);};tds.appendChild(si);tr.appendChild(tds);
     const tdv=el('<td style="text-align:center"></td>');const cb=el('<input type="checkbox" />');cb.checked=!!s.verified;cb.onchange=e=>{s.verified=e.target.checked;persist(c);computeBlocks(c,d);};tdv.appendChild(cb);tr.appendChild(tdv);
     const tdx=el('<td style="text-align:center"></td>');const del=el('<button title="Eliminar turno" style="border:none;background:none;color:var(--tx3);cursor:pointer;font-size:14px;padding:2px 4px">✕</button>');
     del.onclick=()=>{if(confirm('¿Eliminar el turno "'+(s.code||'')+'"?')){c.shifts.splice(i,1);persist(c);refreshDetail(c);}};
     tdx.appendChild(del);tr.appendChild(tdx);
     tb.appendChild(tr);
   });
-  c2.appendChild(sht);
+  shw.appendChild(sht);c2.appendChild(shw);
   const addRow=el('<div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"></div>');
   const addBtn=el('<button class="btn ghost" style="padding:7px 13px;font-size:12.5px">＋ Agregar turno</button>');
   addBtn.onclick=()=>{c.shifts.push({code:'Nuevo',weeklyHours:48,daysPerWeek:5,range:'7:00 a 17:00',break:'1h',classification:'Diurna',hc:'',verified:false,mealMin:60,mealCounts:false,startMin:420,plan:{}});persist(c);refreshDetail(c);};
@@ -926,5 +945,23 @@ function computeIfOpen(c){const d=document.querySelector('.draw');if(d)computeBl
 let pdt=null;function persistDebounced(c){clearTimeout(pdt);pdt=setTimeout(()=>persist(c),500);}
 function persist(c){saveClient(c);}
 
-(async function(){await load();render();})();
+/* ---------- diagnóstico global: cualquier error de JS se muestra en pantalla ---------- */
+window.addEventListener('error',function(e){
+  try{
+    let b=document.getElementById('errBanner');
+    if(!b){b=document.createElement('div');b.id='errBanner';
+      b.style.cssText='position:fixed;bottom:12px;left:12px;right:12px;z-index:9999;background:#FBEAE7;border:1px solid #BC1401;color:#9A1001;padding:10px 14px;border-radius:8px;font:12px/1.5 monospace;max-height:140px;overflow:auto;box-shadow:0 6px 20px rgba(0,0,0,.15)';
+      document.body.appendChild(b);}
+    b.innerHTML='<b>⚠️ Error de JavaScript</b> — comparte este texto: '+String(e.message).replace(/</g,'&lt;')+' <i>(línea '+e.lineno+')</i> <span style="float:right;cursor:pointer" onclick="this.parentNode.remove()">✕</span>';
+  }catch(_){}
+});
+(async function(){
+  try{await load();}
+  catch(err){
+    console.error('Fallo en load():',err);
+    try{DATA=JSON.parse(JSON.stringify(SEED.clients));normalizeShifts();DATA_SRC_LABEL='Turnos: seed local (error de carga)';}catch(_){}
+    window.dispatchEvent(new ErrorEvent('error',{message:'load(): '+(err&&err.message||err),lineno:0}));
+  }
+  render();
+})();
 </script></body></html>
