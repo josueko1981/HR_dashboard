@@ -119,6 +119,31 @@
   .refgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
   .note{font-size:12.5px;color:var(--tx2);background:var(--warn-s);border:1px solid #f0dcae;border-radius:8px;padding:9px 11px;margin-top:6px}
   .note.ok{background:#e8f5ec;border-color:#bfe3c8}.note.bad{background:#fdecea;border-color:#f2c1bb}.note.info{background:#eef3f9;border-color:#ccd9ea}
+
+  /* --- guía estratégica --- */
+  .vd{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.4px;padding:3px 9px;border-radius:20px;text-transform:uppercase}
+  .vd.ok{background:var(--ok-s);color:#0E9F6E}.vd.warn{background:var(--warn-s);color:#9a5d05}.vd.bad{background:#FBEAE7;color:#BC1401}
+  .decstrip{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+  .decstrip .dc{background:#F7F9FA;border:1px solid var(--line);border-radius:8px;padding:8px 12px;text-align:center;min-width:64px}
+  .decstrip .dc b{display:block;font-family:var(--mono);font-size:15px;color:var(--acc)}
+  .decstrip .dc span{font-size:11px;color:var(--tx3)}
+  .fam{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:12px;background:#fff}
+  .fam.dead{background:#FBFBFC;opacity:.92}
+  .fam h4{margin:0 0 4px;font-size:14.5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .fam .why{font-size:12.5px;color:var(--tx2);margin:6px 0 8px;line-height:1.55}
+  .fam table{width:100%;border-collapse:collapse;margin-top:4px}
+  .fam th,.fam td{padding:5px 8px;font-size:12.5px;border-bottom:1px solid var(--line2);text-align:left}
+  .fam th{font-size:10.5px;text-transform:uppercase;letter-spacing:.3px;color:var(--tx3)}
+  .fam td.mono{font-family:var(--mono)}
+  .fam td.strike{text-decoration:line-through;color:var(--tx3)}
+  .brk{display:flex;gap:10px;flex-wrap:wrap;margin:8px 0}
+  .brk .b{flex:1;min-width:180px;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+  .brk .b b{font-family:var(--mono);font-size:19px;color:var(--acc);display:block}
+  .brk .b .t{font-size:12px;color:var(--tx2);line-height:1.5;margin-top:4px}
+  .reco{background:linear-gradient(135deg,#1A1A1D,#26262B);color:#E7E7EA;border-radius:12px;padding:18px 20px;margin-bottom:18px}
+  .reco h3{margin:0 0 8px;color:#fff;font-size:16px}
+  .reco p{font-size:13px;line-height:1.65;color:#C9C9D0;margin:6px 0}
+  .reco .pill{display:inline-block;background:rgba(188,20,1,.25);border:1px solid #BC1401;color:#ffb3a8;border-radius:20px;font-size:11px;padding:3px 10px;margin:3px 4px 0 0}
   @media(max-width:880px){.rail{display:none}.kpis{grid-template-columns:repeat(2,1fr)}.routes{grid-template-columns:1fr}.grid2,.grid3{grid-template-columns:1fr}}
 
   /* ---- shift designer ---- */
@@ -398,6 +423,7 @@ function render(){
   const sc=el('<div class="scroll"></div>');
   if(STATE.view==='portfolio')sc.appendChild(portfolioEl());
   else if(STATE.view==='behind')sc.appendChild(behindEl());
+  else if(STATE.view==='strategy')sc.appendChild(strategyEl());
   else sc.appendChild(assumpEl());
   main.appendChild(sc);
   root.appendChild(main);
@@ -421,7 +447,7 @@ function railEl(){
   const r=el('<div class="rail"></div>');
   r.appendChild(el('<div class="brand"><img class="logo" src="data:image/png;base64,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" alt="TACNA"/><span>Reforma LFT · Centro de comando 2027–2030</span></div>'));
   const nav=el('<div class="nav"></div>');
-  [['portfolio','Portafolio'],['behind','Rezagados'],['assump','Supuestos y referencia']].forEach(([k,t])=>{
+  [['portfolio','Portafolio'],['strategy','Guía estratégica'],['behind','Rezagados'],['assump','Supuestos y referencia']].forEach(([k,t])=>{
     const b=el('<button class="'+(STATE.view===k?'on':'')+'"><span class="dot"></span>'+t+'</button>');
     b.onclick=()=>{STATE.view=k;STATE.open=null;render();};nav.appendChild(b);
   });
@@ -438,6 +464,7 @@ function railEl(){
 function topEl(){
   const titles={portfolio:['Portafolio de clientes','Avance de preparación y costo full-burden estimado por año objetivo'],
     behind:['Clientes rezagados','Prioriza captura y convenios antes del 1-ene-2027'],
+    strategy:['Guía estratégica de jornadas','Del pizarrón a la propuesta: la clave decimal, los descansos 30/36/42 y el veredicto de cada familia de horario'],
     assump:['Supuestos y referencia legal','Parámetros del modelo y topes estatutarios (Art. 60–68 LFT, reforma 2026)']};
   const [h,p]=titles[STATE.view];
   return el('<div class="top"><div><h1>'+h+'</h1><p>'+p+'</p></div><div class="small">Año objetivo: <b style="font-family:var(--mono);color:var(--tx)">'+STATE.year+'</b></div></div>');
@@ -535,6 +562,87 @@ function behindEl(){
   return wrap;
 }
 function risk(o){let s=0;s+=(100-o.p);if(+o.c.union>0&&!(o.c.checks&&o.c.checks.conv))s+=60;s+=Math.min(40,o.c.hc/10);if(o.r.hasGap)s+=20;if(!o.r.otFeasibleAll&&o.r.hasGap)s+=25;return s;}
+
+/* ---------- guía estratégica (pizarrón formalizado) ---------- */
+function strategyEl(){
+  const w=el('<div></div>');
+
+  // 0) Recomendación ejecutiva
+  const reco=el('<div class="reco"><h3>🧭 Recomendación TACNA: saltar directo a 40 horas</h3>'+
+    '<p>La reforma permite bajar gradualmente (46 → 44 → 42 → 40 entre 2027 y 2030), pero eso significa <b style="color:#fff">4 cambios de horario, 4 comunicados, 4 ajustes de nómina y 4 riesgos de incumplimiento</b> en cada corte de enero. La ruta validada con criterio jurídico-laboral es <b style="color:#fff">un solo cambio ahora: implantar la semana de 40 horas desde el inicio</b>, con turnos escalonados según la necesidad de cada departamento, y separando siempre producción de administrativos y servicios.</p>'+
+    '<div><span class="pill">1 transición en vez de 4</span><span class="pill">Ventaja de retención y reclutamiento 4 años antes</span><span class="pill">Cero riesgo en cortes de enero</span><span class="pill">Turnos escalonados por departamento</span><span class="pill">Producción ≠ administrativo/servicios</span></div></div>');
+  w.appendChild(reco);
+
+  // 1) La clave decimal
+  const p1=el('<div class="panel"><div class="ph"><h2>La clave que destraba todo: 6 minutos = 0.1 horas</h2><span class="hint">si el reloj se piensa en décimas, todos los horarios cuadran</span></div></div>');
+  const b1=el('<div style="padding:14px 16px">');
+  b1.appendChild(el('<div style="font-size:13px;color:var(--tx2);line-height:1.6">Toda jornada de la reforma, dividida entre sus días, cae en décimas de hora: 48÷5 = 9.6, 46÷5 = 9.2, 44÷4 = 11. Como <b>una décima son exactamente 6 minutos</b>, las salidas siempre caen en minutos limpios del reloj (:00, :12, :24, :36, :48). Nunca aparecen minutos raros — y eso hace el horario fácil de comunicar, checar y defender.</div>'));
+  const strip=el('<div class="decstrip"></div>');
+  [[6,'0.1 h'],[12,'0.2 h'],[18,'0.3 h'],[24,'0.4 h'],[30,'0.5 h'],[36,'0.6 h'],[42,'0.7 h'],[48,'0.8 h'],[54,'0.9 h'],[60,'1.0 h']].forEach(([m,h])=>{
+    strip.appendChild(el('<div class="dc"><b>'+m+"'"+'</b><span>'+h+'</span></div>'));
+  });
+  b1.appendChild(strip);
+  b1.appendChild(el('<div class="note">Ejemplo: entrada 6:00 con jornada de 9.6 h → 9 h + 0.6 h (36 min) → salida <b>15:36</b>. Al año siguiente la jornada baja a 9.2 h y la salida se recorre exactamente 24 minutos: <b>15:12</b>.</div>'));
+  p1.appendChild(b1); w.appendChild(p1);
+
+  // 2) Descansos 30/36/42
+  const p2=el('<div class="panel"><div class="ph"><h2>Descansos: cómo se construyen 30, 36 y 42 minutos</h2><span class="hint">el derecho de comida de los días absorbidos se reparte, no se pierde</span></div></div>');
+  const b2=el('<div style="padding:14px 16px">');
+  const brk=el('<div class="brk"></div>');
+  brk.appendChild(el('<div class="b"><b>30 min</b><div class="t"><b>El de ley.</b> Media hora de comida por jornada (0.5 h). Es el piso irrenunciable en semana de 6 días.</div></div>'));
+  brk.appendChild(el('<div class="b"><b>36 min</b><div class="t"><b>Semana de 5 días (L–V).</b> Al integrar el sábado a la semana, sus 30 min de comida se reparten: 30 ÷ 5 = <b>6 min extra por día</b>. 30 + 6 = 36 (0.6 h).</div></div>'));
+  brk.appendChild(el('<div class="b"><b>42 min</b><div class="t"><b>Semana de 4 días (L–J).</b> Se absorben viernes <i>y</i> sábado: 6 + 6 = <b>12 min extra por día</b>. 30 + 12 = 42 (0.7 h). Es derecho del trabajador, no cortesía.</div></div>'));
+  b2.appendChild(brk);
+  b2.appendChild(el('<div class="note"><b>Ley Silla / bipedestación:</b> además de la comida, pausas de recuperación cada 3–4 horas de pie. Patrón de referencia del ejercicio: 10\' + 10\' + 30\' (comida) + 10\', o variantes de 15\' según el proceso productivo. El de 30 es de ley; los demás se diseñan según productividad y proceso.</div>'));
+  p2.appendChild(b2); w.appendChild(p2);
+
+  // 3) Las familias de horario
+  const p3=el('<div class="panel"><div class="ph"><h2>Las 4 familias de horario — veredicto</h2><span class="hint">entrada de referencia 6:00 en producción · comida dentro de jornada</span></div></div>');
+  const b3=el('<div style="padding:14px 16px">');
+
+  const famLV=el('<div class="fam"><h4>Lunes a viernes, jornada pareja <span class="vd warn">Viable · 4 cambios</span></h4>'+
+    '<div class="why">La jornada diaria baja una fracción cada año y la salida se recorre 24 minutos. Funciona, pero obliga a re-comunicar horario, nómina y checador cada enero durante 4 años.</div>'+
+    '<table><thead><tr><th>Año</th><th>H/sem</th><th>H/día</th><th>Horario</th><th>Descanso</th></tr></thead><tbody>'+
+    [[2026,48,'9.6','6:00 – 15:36'],[2027,46,'9.2','6:00 – 15:12'],[2028,44,'8.8','6:00 – 14:48'],[2029,42,'8.4','6:00 – 14:24'],[2030,40,'8.0','6:00 – 14:00']].map(r=>'<tr><td class="mono">'+r[0]+'</td><td class="mono">'+r[1]+'</td><td class="mono">'+r[2]+'</td><td class="mono">'+r[3]+'</td><td class="mono">36\'</td></tr>').join('')+
+    '</tbody></table></div>');
+  b3.appendChild(famLV);
+
+  const fam4=el('<div class="fam"><h4>4 días, lunes a jueves <span class="vd ok">Viable ⭐ la más atractiva</span></h4>'+
+    '<div class="why">Viernes libre permanente: la palanca de retención más potente del mercado. Requiere descanso de 42\' (30 de ley + 6 del viernes + 6 del sábado absorbidos) y pausas de bipedestación cada 3–4 h por tratarse de jornadas largas.</div>'+
+    '<table><thead><tr><th>Año</th><th>H/sem</th><th>H/día</th><th>Horario</th><th>Descanso</th></tr></thead><tbody>'+
+    [[2026,48,'12.0','6:00 – 18:00'],[2027,46,'11.5','6:00 – 17:30'],[2028,44,'11.0','6:00 – 17:00'],[2029,42,'10.5','6:00 – 16:30'],[2030,40,'10.0','6:00 – 16:00']].map(r=>'<tr><td class="mono">'+r[0]+'</td><td class="mono">'+r[1]+'</td><td class="mono">'+r[2]+'</td><td class="mono">'+r[3]+'</td><td class="mono">42\'</td></tr>').join('')+
+    '</tbody></table><div class="why" style="margin-top:8px">⚠️ Ojo en 2026–2027: 12 y 11.5 h de presencia tocan el tope agregado de 12 h/día — sin margen para tiempo extra esos días.</div></div>');
+  b3.appendChild(fam4);
+
+  const famMix=el('<div class="fam"><h4>Mixta: L–J sostenido en 9.6 h + viernes decreciente <span class="vd warn">Viable solo hasta 2028</span></h4>'+
+    '<div class="why">Se congela el horario de lunes a jueves (7:00 – 16:36) y el viernes absorbe toda la reducción anual: se encoge 2 horas por año. Para 2029 el viernes queda en 3.6 h — nadie justifica transporte, arranque de línea y comedor por media jornada. <b>Muere en 2029.</b></div>'+
+    '<table><thead><tr><th>Año</th><th>H/sem</th><th>Viernes</th><th>Horario viernes</th></tr></thead><tbody>'+
+    [[2027,46,'7.6 h','7:00 – 14:36',''],[2028,44,'5.6 h','7:00 – 12:36',''],[2029,42,'3.6 h','7:00 – 10:36','strike'],[2030,40,'1.6 h','—','strike']].map(r=>'<tr><td class="mono '+r[4]+'">'+r[0]+'</td><td class="mono '+r[4]+'">'+r[1]+'</td><td class="mono '+r[4]+'">'+r[2]+'</td><td class="mono '+r[4]+'">'+r[3]+'</td></tr>').join('')+
+    '</tbody></table></div>');
+  b3.appendChild(famMix);
+
+  const fam3=el('<div class="fam dead"><h4>3 días <span class="vd bad">Obsoleta</span></h4>'+
+    '<div class="why">Tres días de 12 h son 36 h/semana contra las 46–48 permitidas hoy: la empresa <b>regala ~10 horas de trabajo por colaborador cada semana</b> desde el primer día, y la brecha nunca se cierra. No es práctica ni viable.</div></div>');
+  b3.appendChild(fam3);
+
+  const famDis=el('<div class="fam dead"><h4>Jornada discontinua (comida de 1 h fuera de planta) <span class="vd bad">Obsoleta</span></h4>'+
+    '<div class="why">Para que la comida no compute, el colaborador debe salir de la planta 1 hora continua — eso <b>alarga la presencia una hora sin pago</b>, justo cuando el mercado compite por retención. Rompe el esquema decimal, es impráctica en parques industriales, y es jurídicamente frágil: si la gente se queda dentro, la hora computa y se incumple. Era una herramienta para estirar jornadas largas; con la reforma, estirar es lo contrario del objetivo.</div></div>');
+  b3.appendChild(famDis);
+
+  p3.appendChild(b3); w.appendChild(p3);
+
+  // 4) Administrativos y servicios
+  const p4=el('<div class="panel"><div class="ph"><h2>Administrativos y servicios — L–V, entrada 7:00</h2><span class="hint">se revisan por separado de producción · comida dentro de jornada</span></div></div>');
+  const b4=el('<div style="padding:14px 16px">');
+  b4.appendChild(el('<div class="fam" style="margin-bottom:0"><table><thead><tr><th>Año</th><th>H/sem</th><th>H/día</th><th>Horario</th></tr></thead><tbody>'+
+    [[2027,46,'9.2','7:00 – 16:12'],[2028,44,'8.8','7:00 – 15:48'],[2029,42,'8.4','7:00 – 15:24'],[2030,40,'8.0','7:00 – 15:00']].map(r=>'<tr><td class="mono">'+r[0]+'</td><td class="mono">'+r[1]+'</td><td class="mono">'+r[2]+'</td><td class="mono">'+r[3]+'</td></tr>').join('')+
+    '</tbody></table></div>'));
+  b4.appendChild(el('<div class="note">O bien, bajo la recomendación TACNA: implantar directo <b>7:00 – 15:00</b> (40 h) desde el inicio y evitar los 4 ajustes intermedios. Servicios (vigilancia, comedor, mantenimiento) con turnos escalonados para cubrir la ventana ampliada de producción.</div>'));
+  p4.appendChild(b4); w.appendChild(p4);
+
+  return w;
+}
+
 function assumpEl(){
   const g=DATA; const wrap=el('<div></div>');
   const p1=el('<div class="panel"><div class="ph"><h2>Topes estatutarios — horas ordinarias por semana</h2><span class="hint">Index Mexicali · reforma LFT may-2026 (referencia, editable solo por legal)</span></div></div>');
@@ -602,6 +710,7 @@ function detailEl(c){
   c2.appendChild(addRow);
   body.appendChild(c2);
   // calculadora de jornada legal
+  body.appendChild(routeCard(c));
   body.appendChild(jornadaCalcCard(c,d));
   // ramp + routes host
   const c3=el('<div class="card" id="calcHost"></div>');
@@ -803,6 +912,30 @@ function costSummary(c,year){
   return box;
 }
 function refreshDetail(c){const ov=document.querySelector('.ov');if(ov){const fresh=detailEl(c);ov.replaceWith(fresh);}}
+
+
+/* ---------- ruta estratégica sugerida (por cliente) ---------- */
+function routeCard(c){
+  const card=el('<div class="card"><h3>🧭 Ruta estratégica sugerida</h3></div>');
+  const maxH=Math.max(0,...c.shifts.map(s=>+s.weeklyHours||0));
+  const gap=Math.max(0,maxH-40);
+  const anyLong=c.shifts.some(s=>(+s.weeklyHours||0)/( +s.daysPerWeek||5)>=10);
+  let intro;
+  if(maxH<=40) intro='Este cliente ya opera en <b>≤ 40 h/semana</b> en su turno más largo: está listo para 2030. Solo documentar horarios, descansos y pausas de bipedestación.';
+  else intro='Turno más largo hoy: <b>'+maxH+' h/sem</b> → objetivo 2030: <b>40 h</b> (brecha de <b>'+r1(gap)+' h</b>). Dos rutas posibles:';
+  card.appendChild(el('<div class="small" style="margin-bottom:8px">'+intro+'</div>'));
+  if(maxH>40){
+    const t=el('<table class="fam" style="border:none;padding:0"><thead><tr><th></th><th>Ruta gradual</th><th>Salto directo a 40 h ⭐</th></tr></thead><tbody>'+
+      '<tr><td>Cambios de horario</td><td class="mono">4 (cada enero 2027–2030)</td><td class="mono">1 (ahora)</td></tr>'+
+      '<tr><td>Comunicados / nómina / checador</td><td class="mono">4 ciclos</td><td class="mono">1 ciclo</td></tr>'+
+      '<tr><td>Riesgo en cortes de enero</td><td class="mono">4 ventanas</td><td class="mono">0</td></tr>'+
+      '<tr><td>Retención y reclutamiento</td><td>paridad con el mercado</td><td><b>ventaja 4 años antes</b></td></tr>'+
+      '</tbody></table>');
+    card.appendChild(t);
+    card.appendChild(el('<div class="note" style="margin-top:8px">Diseño recomendado: <b>producción</b> en L–V de 8 h (36\' de descanso) o L–J de 10 h (42\' + pausas cada 3–4 h'+(anyLong?' — este cliente ya maneja jornadas largas':'')+'); <b>administrativos</b> L–V con salida fija; <b>servicios</b> con turnos escalonados cubriendo la ventana de producción. Usa la 🧮 calculadora de abajo para armar la propuesta con los números de este cliente.</div>'));
+  }
+  return card;
+}
 
 /* ---------- Calculadora de Jornada Legal (propuestas de cliente) ---------- */
 const JC_DAYS=['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
