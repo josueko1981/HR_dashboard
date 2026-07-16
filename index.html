@@ -571,8 +571,6 @@ function strategyEl(){
   const reco=el('<div class="reco"><h3>🧭 Recomendación TACNA: saltar directo a 40 horas</h3>'+
     '<p>La reforma permite bajar gradualmente (46 → 44 → 42 → 40 entre 2027 y 2030), pero eso significa <b style="color:#fff">4 cambios de horario, 4 comunicados, 4 ajustes de nómina y 4 riesgos de incumplimiento</b> en cada corte de enero. La ruta validada con criterio jurídico-laboral es <b style="color:#fff">un solo cambio ahora: implantar la semana de 40 horas desde el inicio</b>, con turnos escalonados según la necesidad de cada departamento, y separando siempre producción de administrativos y servicios.</p>'+
     '<div><span class="pill">1 transición en vez de 4</span><span class="pill">Ventaja de retención y reclutamiento 4 años antes</span><span class="pill">Cero riesgo en cortes de enero</span><span class="pill">Turnos escalonados por departamento</span><span class="pill">Producción ≠ administrativo/servicios</span></div></div>');
-  w.appendChild(reco);
-
   // 1) La clave decimal
   const p1=el('<div class="panel"><div class="ph"><h2>La clave que destraba todo: 6 minutos = 0.1 horas</h2><span class="hint">si el reloj se piensa en décimas, todos los horarios cuadran</span></div></div>');
   const b1=el('<div style="padding:14px 16px">');
@@ -596,49 +594,56 @@ function strategyEl(){
   b2.appendChild(el('<div class="note"><b>Ley Silla / bipedestación:</b> además de la comida, pausas de recuperación cada 3–4 horas de pie. Patrón de referencia del ejercicio: 10\' + 10\' + 30\' (comida) + 10\', o variantes de 15\' según el proceso productivo. El de 30 es de ley; los demás se diseñan según productividad y proceso.</div>'));
   p2.appendChild(b2); w.appendChild(p2);
 
+  // 2.5) Jornada continua y discontinua
+  const p25=el('<div class="panel"><div class="ph"><h2>Antes de las familias: jornada continua y discontinua</h2><span class="hint">la base conceptual de todo horario</span></div></div>');
+  const b25=el('<div style="padding:14px 16px">');
+  b25.appendChild(el('<div class="fam"><h4>Jornada continua <span class="vd ok">La base de todas las familias viables</span></h4>'+
+    '<div class="why">La comida y las pausas se disfrutan <b>dentro de la planta y computan como tiempo trabajado</b>. La salida es simplemente entrada + jornada. Es la que mantiene el esquema decimal limpio, la más fácil de checar y la que el colaborador prefiere: entra, trabaja, come dentro, sale temprano.</div></div>'));
+  b25.appendChild(el('<div class="fam dead"><h4>Jornada discontinua <span class="vd bad">Obsoleta</span></h4>'+
+    '<div class="why">Para que la comida no compute, el colaborador debe salir de la planta 1 hora continua — eso <b>alarga la presencia una hora sin pago</b>, justo cuando el mercado compite por retención. Rompe el esquema decimal, es impráctica en parques industriales, y es jurídicamente frágil: si la gente se queda dentro, la hora computa y se incumple. Era una herramienta para estirar jornadas largas; con la reforma, estirar es lo contrario del objetivo.</div></div>'));
+  p25.appendChild(b25); w.appendChild(p25);
+
   // 3) Las familias de horario
-  const p3=el('<div class="panel"><div class="ph"><h2>Las 4 familias de horario — veredicto</h2><span class="hint">entrada de referencia 6:00 en producción · comida dentro de jornada</span></div></div>');
+  const p3=el('<div class="panel"><div class="ph"><h2>Las 5 familias de horario</h2><span class="hint">entrada de referencia 6:00 en producción · comida dentro de jornada</span></div></div>');
   const b3=el('<div style="padding:14px 16px">');
 
-  const famLV=el('<div class="fam"><h4>Lunes a viernes, jornada pareja <span class="vd warn">Viable · 4 cambios</span></h4>'+
+  const famLV=el('<div class="fam"><h4>1 · 5 días — Lunes a viernes, jornada pareja <span class="vd ok">Viable</span></h4>'+
     '<div class="why">La jornada diaria baja una fracción cada año y la salida se recorre 24 minutos. Funciona, pero obliga a re-comunicar horario, nómina y checador cada enero durante 4 años.</div>'+
     '<table><thead><tr><th>Año</th><th>H/sem</th><th>H/día</th><th>Horario</th><th>Descanso</th></tr></thead><tbody>'+
     [[2026,48,'9.6','6:00 – 15:36'],[2027,46,'9.2','6:00 – 15:12'],[2028,44,'8.8','6:00 – 14:48'],[2029,42,'8.4','6:00 – 14:24'],[2030,40,'8.0','6:00 – 14:00']].map(r=>'<tr><td class="mono">'+r[0]+'</td><td class="mono">'+r[1]+'</td><td class="mono">'+r[2]+'</td><td class="mono">'+r[3]+'</td><td class="mono">36\'</td></tr>').join('')+
     '</tbody></table></div>');
   b3.appendChild(famLV);
 
-  const fam4=el('<div class="fam"><h4>4 días, lunes a jueves <span class="vd ok">Viable ⭐ la más atractiva</span></h4>'+
+  const fam4=el('<div class="fam"><h4>2 · 4 días — Lunes a jueves <span class="vd ok">Viable</span></h4>'+
     '<div class="why">Viernes libre permanente: la palanca de retención más potente del mercado. Requiere descanso de 42\' (30 de ley + 6 del viernes + 6 del sábado absorbidos) y pausas de bipedestación cada 3–4 h por tratarse de jornadas largas.</div>'+
     '<table><thead><tr><th>Año</th><th>H/sem</th><th>H/día</th><th>Horario</th><th>Descanso</th></tr></thead><tbody>'+
     [[2026,48,'12.0','6:00 – 18:00'],[2027,46,'11.5','6:00 – 17:30'],[2028,44,'11.0','6:00 – 17:00'],[2029,42,'10.5','6:00 – 16:30'],[2030,40,'10.0','6:00 – 16:00']].map(r=>'<tr><td class="mono">'+r[0]+'</td><td class="mono">'+r[1]+'</td><td class="mono">'+r[2]+'</td><td class="mono">'+r[3]+'</td><td class="mono">42\'</td></tr>').join('')+
     '</tbody></table><div class="why" style="margin-top:8px">⚠️ Ojo en 2026–2027: 12 y 11.5 h de presencia tocan el tope agregado de 12 h/día — sin margen para tiempo extra esos días.</div></div>');
   b3.appendChild(fam4);
 
-  const famMix=el('<div class="fam"><h4>Mixta: L–J sostenido en 9.6 h + viernes decreciente <span class="vd warn">Viable solo hasta 2028</span></h4>'+
+  const famMix=el('<div class="fam"><h4>3 · 5 días — Lunes a jueves sostenido en 9.6 + viernes decreciente <span class="vd warn">Viable solo hasta 2028</span></h4>'+
     '<div class="why">Se congela el horario de lunes a jueves (7:00 – 16:36) y el viernes absorbe toda la reducción anual: se encoge 2 horas por año. Para 2029 el viernes queda en 3.6 h — nadie justifica transporte, arranque de línea y comedor por media jornada. <b>Muere en 2029.</b></div>'+
     '<table><thead><tr><th>Año</th><th>H/sem</th><th>Viernes</th><th>Horario viernes</th></tr></thead><tbody>'+
     [[2027,46,'7.6 h','7:00 – 14:36',''],[2028,44,'5.6 h','7:00 – 12:36',''],[2029,42,'3.6 h','7:00 – 10:36','strike'],[2030,40,'1.6 h','—','strike']].map(r=>'<tr><td class="mono '+r[4]+'">'+r[0]+'</td><td class="mono '+r[4]+'">'+r[1]+'</td><td class="mono '+r[4]+'">'+r[2]+'</td><td class="mono '+r[4]+'">'+r[3]+'</td></tr>').join('')+
     '</tbody></table></div>');
   b3.appendChild(famMix);
 
-  const fam3=el('<div class="fam dead"><h4>3 días <span class="vd bad">Obsoleta</span></h4>'+
+  const fam3=el('<div class="fam dead"><h4>4 · 4 x 3 <span class="vd bad">Obsoleta</span></h4>'+
     '<div class="why">Tres días de 12 h son 36 h/semana contra las 46–48 permitidas hoy: la empresa <b>regala ~10 horas de trabajo por colaborador cada semana</b> desde el primer día, y la brecha nunca se cierra. No es práctica ni viable.</div></div>');
   b3.appendChild(fam3);
 
-  const famDis=el('<div class="fam dead"><h4>Jornada discontinua (comida de 1 h fuera de planta) <span class="vd bad">Obsoleta</span></h4>'+
-    '<div class="why">Para que la comida no compute, el colaborador debe salir de la planta 1 hora continua — eso <b>alarga la presencia una hora sin pago</b>, justo cuando el mercado compite por retención. Rompe el esquema decimal, es impráctica en parques industriales, y es jurídicamente frágil: si la gente se queda dentro, la hora computa y se incumple. Era una herramienta para estirar jornadas largas; con la reforma, estirar es lo contrario del objetivo.</div></div>');
-  b3.appendChild(famDis);
+
+  const fam5=el('<div class="fam"><h4>5 · Administrativos y servicios — L–V, entrada 7:00 <span class="vd ok">Viable</span></h4>'+
+    '<div class="why">Se revisan por separado de producción, con comida dentro de jornada. Servicios (vigilancia, comedor, mantenimiento) con turnos escalonados para cubrir la ventana ampliada de producción.</div>'+
+    '<table><thead><tr><th>Año</th><th>H/sem</th><th>H/día</th><th>Horario</th></tr></thead><tbody>'+
+    [[2027,46,'9.2','7:00 – 16:12'],[2028,44,'8.8','7:00 – 15:48'],[2029,42,'8.4','7:00 – 15:24'],[2030,40,'8.0','7:00 – 15:00']].map(r=>'<tr><td class="mono">'+r[0]+'</td><td class="mono">'+r[1]+'</td><td class="mono">'+r[2]+'</td><td class="mono">'+r[3]+'</td></tr>').join('')+
+    '</tbody></table><div class="why" style="margin-top:8px">O bien, bajo la recomendación TACNA: implantar directo <b>7:00 – 15:00</b> (40 h) desde el inicio y evitar los ajustes intermedios.</div></div>');
+  b3.appendChild(fam5);
 
   p3.appendChild(b3); w.appendChild(p3);
 
-  // 4) Administrativos y servicios
-  const p4=el('<div class="panel"><div class="ph"><h2>Administrativos y servicios — L–V, entrada 7:00</h2><span class="hint">se revisan por separado de producción · comida dentro de jornada</span></div></div>');
-  const b4=el('<div style="padding:14px 16px">');
-  b4.appendChild(el('<div class="fam" style="margin-bottom:0"><table><thead><tr><th>Año</th><th>H/sem</th><th>H/día</th><th>Horario</th></tr></thead><tbody>'+
-    [[2027,46,'9.2','7:00 – 16:12'],[2028,44,'8.8','7:00 – 15:48'],[2029,42,'8.4','7:00 – 15:24'],[2030,40,'8.0','7:00 – 15:00']].map(r=>'<tr><td class="mono">'+r[0]+'</td><td class="mono">'+r[1]+'</td><td class="mono">'+r[2]+'</td><td class="mono">'+r[3]+'</td></tr>').join('')+
-    '</tbody></table></div>'));
-  b4.appendChild(el('<div class="note">O bien, bajo la recomendación TACNA: implantar directo <b>7:00 – 15:00</b> (40 h) desde el inicio y evitar los 4 ajustes intermedios. Servicios (vigilancia, comedor, mantenimiento) con turnos escalonados para cubrir la ventana ampliada de producción.</div>'));
-  p4.appendChild(b4); w.appendChild(p4);
+  // Cierre: la recomendación llega después de construir el razonamiento, no antes
+  w.appendChild(reco);
 
   return w;
 }
@@ -675,26 +680,28 @@ function detailEl(c){
   const c1=el('<div class="card"><h3>Datos del cliente</h3></div>');
   const g1=el('<div class="grid2"></div>');
   g1.appendChild(fld('Razón social','razon','text',c.razon||'',c));
-  g1.appendChild(fld('Supervisor sr responsable','supervisor','text',c.supervisor||'',c));
-  const g2=el('<div class="grid2" style="margin-top:10px"></div>');
-  g2.appendChild(fldPre('Salario diario','dailySalary',c.dailySalary??'',c,'$'));
-  g2.appendChild(fldPre('Factor de carga social','burden',c.burden??0.35,c,'×',true));
-  c1.appendChild(g1);c1.appendChild(g2);body.appendChild(c1);
+  g1.appendChild(fldPre('Factor de carga social','burden',c.burden??0.35,c,'×',true));
+  c1.appendChild(g1);body.appendChild(c1);
   // shifts
-  const c2=el('<div class="card"><h3>Jornadas actuales — verifica, captura HC y comida</h3></div>');
-  const shw=el('<div class="shwrap"></div>');const sht=el('<table class="shtbl"><thead><tr><th>Código</th><th>Entrada</th><th>Días</th><th>H/sem</th><th>Clase</th><th>Comida</th><th>Computa</th><th>HC</th><th>$/día</th><th>✓</th><th></th></tr></thead><tbody></tbody></table>');
+  const c2=el('<div class="card"><h3>Jornadas actuales — verifica y captura</h3></div>');
+  const shw=el('<div class="shwrap"></div>');const sht=el('<table class="shtbl"><thead><tr><th>Código</th><th>Entrada</th><th>Salida</th><th>Días</th><th>H/sem</th><th>Clase</th><th>Comida</th><th>Computa</th><th>✓</th><th></th></tr></thead><tbody></tbody></table>');
   const tb=sht.querySelector('tbody');
   c.shifts.forEach((s,i)=>{
     const tr=el('<tr></tr>');
+    const exitSpan=el('<span style="font-family:var(--mono);font-size:13px;color:var(--tx)"></span>');
+    const updExit=()=>{const D=+s.daysPerWeek||0,H=+s.weeklyHours||0,st0=s.startMin??parseStart(s.range);
+      if(!D||!H||st0==null||isNaN(st0)){exitSpan.textContent='—';return;}
+      const ex=st0+(H/D)*60+((s.mealCounts)?0:(+s.mealMin||0));
+      exitSpan.textContent=isFinite(ex)?fmtClock(Math.round(ex)%1440):'—';};
     tr.appendChild(tdInput(c,i,'code',s.code,'text',80));
-    const tde=el('<td></td>');const ei=el('<input type="text" style="max-width:64px"/>');ei.value=fmtClock(s.startMin??parseStart(s.range));ei.onchange=ev=>{s.startMin=parseStart(ev.target.value);persist(c);computeBlocks(c,d);};tde.appendChild(ei);tr.appendChild(tde);
-    tr.appendChild(tdInput(c,i,'daysPerWeek',s.daysPerWeek,'number',48));
-    tr.appendChild(tdInput(c,i,'weeklyHours',s.weeklyHours,'number',58));
+    const tde=el('<td></td>');const ei=el('<input type="text" style="max-width:64px"/>');ei.value=fmtClock(s.startMin??parseStart(s.range));ei.onchange=ev=>{s.startMin=parseStart(ev.target.value);persist(c);computeBlocks(c,d);updExit();};tde.appendChild(ei);tr.appendChild(tde);
+    const tdo=el('<td style="text-align:center"></td>');tdo.appendChild(exitSpan);tr.appendChild(tdo);
+    tr.appendChild(tdInput(c,i,'daysPerWeek',s.daysPerWeek,'number',48,updExit));
+    tr.appendChild(tdInput(c,i,'weeklyHours',s.weeklyHours,'number',58,updExit));
     const tdc=el('<td></td>');const sel=el('<select><option>Diurna</option><option>Mixta</option><option>Nocturna</option></select>');sel.value=s.classification;sel.onchange=e=>{s.classification=e.target.value;persist(c);computeBlocks(c,d);};tdc.appendChild(sel);tr.appendChild(tdc);
-    const tdm=el('<td></td>');const mi=el('<input type="number" style="max-width:56px"/>');mi.value=s.mealMin??60;mi.onchange=e=>{s.mealMin=+e.target.value;persist(c);computeBlocks(c,d);};tdm.appendChild(mi);tr.appendChild(tdm);
-    const tdco=el('<td style="text-align:center"></td>');const co=el('<input type="checkbox" title="¿La comida cuenta como tiempo trabajado?"/>');co.checked=!!s.mealCounts;co.onchange=e=>{s.mealCounts=e.target.checked;persist(c);computeBlocks(c,d);};tdco.appendChild(co);tr.appendChild(tdco);
-    tr.appendChild(tdInput(c,i,'hc',s.hc??'','number',58));
-    const tds=el('<td></td>');const si=el('<input type="number" style="max-width:84px" placeholder="'+(c.dailySalary||'cliente')+'" title="Salario diario específico de este turno/puesto. Vacío = usa el salario general del cliente."/>');si.value=s.salary??'';si.onchange=e=>{s.salary=e.target.value===''?null:+e.target.value;persist(c);computeBlocks(c,d);};tds.appendChild(si);tr.appendChild(tds);
+    const tdm=el('<td></td>');const mi=el('<input type="number" style="max-width:56px"/>');mi.value=s.mealMin??60;mi.onchange=e=>{s.mealMin=+e.target.value;persist(c);computeBlocks(c,d);updExit();};tdm.appendChild(mi);tr.appendChild(tdm);
+    const tdco=el('<td style="text-align:center"></td>');const co=el('<input type="checkbox" title="¿La comida cuenta como tiempo trabajado? Si computa, va dentro de la jornada; si no, extiende la salida."/>');co.checked=!!s.mealCounts;co.onchange=e=>{s.mealCounts=e.target.checked;persist(c);computeBlocks(c,d);updExit();};tdco.appendChild(co);tr.appendChild(tdco);
+    updExit();
     const tdv=el('<td style="text-align:center"></td>');const cb=el('<input type="checkbox" />');cb.checked=!!s.verified;cb.onchange=e=>{s.verified=e.target.checked;persist(c);computeBlocks(c,d);};tdv.appendChild(cb);tr.appendChild(tdv);
     const tdx=el('<td style="text-align:center"></td>');const del=el('<button title="Eliminar turno" style="border:none;background:none;color:var(--tx3);cursor:pointer;font-size:14px;padding:2px 4px">✕</button>');
     del.onclick=()=>{if(confirm('¿Eliminar el turno "'+(s.code||'')+'"?')){c.shifts.splice(i,1);persist(c);refreshDetail(c);}};
@@ -715,24 +722,6 @@ function detailEl(c){
   // ramp + routes host
   const c3=el('<div class="card" id="calcHost"></div>');
   body.appendChild(c3);
-  // checklist
-  const c4=el('<div class="card"><h3>Lista de preparación · '+p+'% completo</h3></div>');
-  CHECKS.forEach(ck=>{
-    const na=ck.na&&ck.na(c);
-    const row=el('<label class="chk"></label>');
-    const cb=el('<input type="checkbox" />');
-    const cur=(c.checks&&c.checks[ck.k]!=null)?c.checks[ck.k]:(ck.auto?ck.auto(c):false);
-    cb.checked=!!cur&&!na;cb.disabled=na;
-    cb.onchange=e=>{c.checks=c.checks||{};c.checks[ck.k]=e.target.checked;persist(c);refreshDetail(c);};
-    row.appendChild(cb);row.appendChild(el('<span>'+ck.t+'</span>'));
-    if(na)row.appendChild(el('<span class="na">N/A</span>'));
-    c4.appendChild(row);
-  });
-  body.appendChild(c4);
-  // notes
-  const c5=el('<div class="card"><h3>Notas operativas</h3></div>');
-  const ta=el('<textarea rows="3" placeholder="Acuerdos, fechas de convenio, dependencias…"></textarea>');ta.value=c.notes||'';ta.oninput=e=>{c.notes=e.target.value;persistDebounced(c);};
-  c5.appendChild(ta);body.appendChild(c5);
   d.appendChild(body);
   ov.appendChild(d);
   setTimeout(()=>{document.getElementById('cls').onclick=()=>{STATE.open=null;render();};computeBlocks(c,d);},0);
@@ -783,7 +772,7 @@ function genComments(c,s,year,daysArr,mealKind){
   return out;
 }
 function commentsPanel(c,s,year,daysArr,mealKind){
-  const box=el('<div class="comments"><h4>Comentarios automáticos · '+(mealKind==='A'?'Propuesta A (30 min)':'Propuesta B (1 h)')+'</h4></div>');
+  const box=el('<div class="comments"><h4>Comentarios automáticos · '+(mealKind==='A'?'Propuesta A (30 min)':'Propuesta B (30+30 repartidos)')+'</h4></div>');
   genComments(c,s,year,daysArr,mealKind).forEach(cm=>{
     const ic={info:'ⓘ',ok:'✓',warn:'▲',bad:'✕'}[cm.sev];
     box.appendChild(el('<div class="cmt '+cm.sev+'"><span class="ic">'+ic+'</span><span>'+cm.txt+'</span></div>'));
@@ -834,11 +823,11 @@ function shiftDesigner(c,s,idx,year,d){
   // proposals A & B
   const mk=(reg&&reg.meal)||null;
   function propCard(meal){
-    const mealMin=meal==='A'?30:60,counts=meal==='A';
+    const mealMin=meal==='A'?30:60,counts=true;
     const prod=r1(prodWeek(daysArr,mealMin,counts));
     const isSel=mk===meal;
     const card=el('<div class="prop '+(isSel?'sel':'')+'"></div>');
-    card.appendChild(el('<div class="ph2"><div class="nm">'+(meal==='A'?'Propuesta A · Comida 30 min (continua)':'Propuesta B · Comida 1 h (discontinua)')+'</div><span class="pr">'+prod+' h productivas/sem</span></div>'));
+    card.appendChild(el('<div class="ph2"><div class="nm">'+(meal==='A'?'Propuesta A · Comida 30 min (continua)':'Propuesta B · Descansos repartidos: 30 min comida + 30 min por proceso')+'</div><span class="pr">'+prod+' h productivas/sem</span></div>'));
     card.appendChild(scheduleTable(start,daysArr,mealMin,counts,restCount));
     const bb=el('<div style="margin-top:8px;text-align:right"></div>');
     const bad=Math.max(...daysArr)>12.001||Math.abs(daysArr.reduce((a,b)=>a+b,0)-Ht)>0.06;
@@ -862,7 +851,7 @@ function computeBlocks(c,d){
   YEARS.forEach(y=>{const b=el('<button class="'+(y===dy?'on':'')+'">'+RAMP.Diurna[y]+' h<span class="gm">'+y+'</span></button>');b.onclick=()=>{host._dy=y;computeBlocks(c,d);};yr.appendChild(b);});
   host.appendChild(yr);
   c.shifts.forEach((s,i)=>host.appendChild(shiftDesigner(c,s,i,dy,d)));
-  host.appendChild(el('<div class="legend"><span><i style="background:var(--warn)"></i>día 10.5–12h (revisar Art. 59)</span><span><i style="background:var(--bad)"></i>&gt;12h (no permitido)</span><span>A = comida 30 min computa · B = comida 1 h discontinua</span></div>'));
+  host.appendChild(el('<div class="legend"><span><i style="background:var(--warn)"></i>día 10.5–12h (revisar Art. 59)</span><span><i style="background:var(--bad)"></i>&gt;12h (no permitido)</span><span>A = comida 30 min computa · B = 30 min comida + 30 min de pausas repartidas según el proceso (todo computa)</span></div>'));
   // cost summary (secondary)
   const cs=costSummary(c,dy);if(cs)host.appendChild(cs);
 }
@@ -893,7 +882,7 @@ function costSummary(c,year){
   const r=calcClient(c,year);
   if(!r.hasGap){const w=el('<div></div>');w.appendChild(el('<div class="note" style="background:var(--ok-s);border-color:#bfe6d3;color:#0a7a54;margin-top:14px">Sin brecha en '+year+': la jornada actual ya cumple el tope.</div>'));w.appendChild(metPanel(c,year,null));return w;}
   const box=el('<div class="card" style="margin-top:14px;background:#FAFBFC"><h3>Impacto financiero preliminar — '+year+'</h3></div>');
-  if(!r.priced){box.appendChild(el('<div class="small">Captura <b>salario diario</b> y <b>HC por turno</b> arriba para costear. La brecha a reponer es <b>'+fmtN(r.gapTot)+' h/sem</b> (≈ '+fmtN(Math.round(r.gapTot/RAMP.Diurna[year]))+' FTE).</div>'));box.appendChild(metPanel(c,year,null));return box;}
+  if(!r.priced){box.appendChild(el('<div class="small">Sube la nómina TRESS abajo para costear con salarios reales. La brecha a reponer es <b>'+fmtN(r.gapTot)+' h/sem</b> (≈ '+fmtN(Math.round(r.gapTot/RAMP.Diurna[year]))+' FTE).</div>'));box.appendChild(metPanel(c,year,null));box.appendChild(tressBlock(c));return box;}
   let refOT=null,refHead=null;c.shifts.forEach(s=>{const cs=calcShift(c,s,year);if(cs.gapPerHead>0&&refOT==null){refOT=cs.otPerHour;refHead=cs.headPerYr;}});
   box.appendChild(el('<div class="small" style="margin-bottom:8px">Reponer <b>'+fmtN(r.gapTot)+' h/sem</b> · full-burden por hora extra <b>'+fmtM(refOT)+'</b> · por plaza/año <b>'+fmtMk(refHead)+'</b></div>'));
   const routes=el('<div class="routes"></div>');
@@ -909,14 +898,102 @@ function costSummary(c,year){
   box.appendChild(ch);
   box.appendChild(metPanel(c,year,r));
   box.appendChild(el('<div class="note" style="margin-top:10px">El extra no sustituye horas ordinarias de forma permanente (Art. 66–68); para la reducción estructural la ruta sostenible es plantilla/rediseño + productividad. Valida el convenio Art. 59 con tu abogado.</div>'));
+  box.appendChild(tressBlock(c));
   return box;
 }
+
+/* ---------- carga de nómina TRESS (activos + salario diario bruto + DL/IDL) ---------- */
+function tressBlock(c){
+  const wrap=el('<div style="margin-top:12px;border:1.5px dashed var(--line);border-radius:10px;padding:14px 16px;background:#fff"></div>');
+  wrap.appendChild(el('<div style="font-weight:700;font-size:13px;margin-bottom:4px">📎 Nómina TRESS — análisis fino de impacto</div>'));
+  wrap.appendChild(el('<div class="small" style="margin-bottom:8px">Sube el Excel de <b>empleados activos</b> descargado de TRESS (salario diario bruto, turno, departamento, clasificación <b>DL / IDL</b>). El dashboard genera un resumen rápido por bandas; el análisis completo con PDF por cliente (DL de mayor impacto · IDL $900–2,500 con impacto · gerencial ≥$3,000 sin impacto) se prepara compartiendo este mismo archivo en la sesión de análisis.</div>'));
+  const inp=el('<input type="file" accept=".xlsx,.xls,.csv" style="font-size:12.5px"/>');
+  const out=el('<div style="margin-top:10px"></div>');
+  if(c.tress&&c.tress.summary){out.appendChild(renderTressSummary(c.tress));}
+  inp.onchange=async e=>{
+    const f=e.target.files[0];if(!f)return;
+    out.innerHTML='<div class="small">Procesando '+f.name+'…</div>';
+    try{
+      const rows=await readWorkbook(f);
+      const sum=summarizeTress(rows);
+      c.tress={file:f.name,date:new Date().toISOString().slice(0,10),summary:sum};persist(c);
+      out.innerHTML='';out.appendChild(renderTressSummary(c.tress));
+    }catch(err){
+      out.innerHTML='<div class="note" style="border-color:#BC1401;background:#FBEAE7;color:#9A1001">No pude leer el archivo: '+String(err.message||err).replace(/</g,'&lt;')+'. Verifica que sea el export estándar de TRESS (.xlsx o .csv) o comparte el archivo directamente en la sesión de análisis.</div>';
+    }
+  };
+  wrap.appendChild(inp);wrap.appendChild(out);
+  return wrap;
+}
+function loadSheetJS(){
+  return new Promise((res,rej)=>{
+    if(window.XLSX)return res(window.XLSX);
+    const s=document.createElement('script');
+    s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload=()=>res(window.XLSX);s.onerror=()=>rej(new Error('sin conexión a la librería de lectura de Excel'));
+    document.head.appendChild(s);
+  });
+}
+async function readWorkbook(f){
+  if(/\.csv$/i.test(f.name)){
+    const txt=await f.text();
+    const lines=txt.split(/\r?\n/).filter(l=>l.trim());
+    const hdr=splitCSV(lines[0]);
+    return lines.slice(1).map(l=>{const cs=splitCSV(l);const o={};hdr.forEach((h,i)=>o[h.trim().toLowerCase()]=cs[i]);return o;});
+  }
+  const XLSX=await loadSheetJS();
+  const buf=await f.arrayBuffer();
+  const wb=XLSX.read(buf,{type:'array'});
+  const ws=wb.Sheets[wb.SheetNames[0]];
+  const arr=XLSX.utils.sheet_to_json(ws,{defval:''});
+  return arr.map(o=>{const n={};Object.keys(o).forEach(k=>n[String(k).trim().toLowerCase()]=o[k]);return n;});
+}
+function splitCSV(l){const out=[];let cur='',q=false;for(const ch of l){if(ch==='"'){q=!q;continue;}if(ch===','&&!q){out.push(cur);cur='';continue;}cur+=ch;}out.push(cur);return out;}
+function pickCol(row,cands){const ks=Object.keys(row);for(const c of cands){const k=ks.find(k=>k.includes(c));if(k)return k;}return null;}
+function summarizeTress(rows){
+  if(!rows.length)throw new Error('el archivo no tiene filas');
+  const kSal=pickCol(rows[0],['salario','sueldo','sd ','sdi','diario']);
+  const kCls=pickCol(rows[0],['clasific','tipo','categor','dl']);
+  const kDep=pickCol(rows[0],['depart','depto','área','area']);
+  const kTur=pickCol(rows[0],['turno','jornada','horario']);
+  if(!kSal)throw new Error('no encontré la columna de salario diario');
+  const bands={dl:{n:0,sum:0},idl:{n:0,sum:0},ger:{n:0,sum:0},otros:{n:0,sum:0}};
+  const deptos={},turnos={};
+  rows.forEach(r=>{
+    const sal=parseFloat(String(r[kSal]).replace(/[$,\s]/g,''))||0;
+    const cls=String(kCls?r[kCls]:'').toUpperCase();
+    let b;
+    if(sal>=3000)b='ger';
+    else if(/\bIDL\b|INDIRECT/.test(cls))b='idl';
+    else if(/\bDL\b|DIRECT/.test(cls))b='dl';
+    else b=(sal>=900&&sal<=2500)?'idl':(sal>0&&sal<900?'dl':'otros');
+    bands[b].n++;bands[b].sum+=sal;
+    if(kDep&&r[kDep])deptos[r[kDep]]=(deptos[r[kDep]]||0)+1;
+    if(kTur&&r[kTur])turnos[r[kTur]]=(turnos[r[kTur]]||0)+1;
+  });
+  return {total:rows.length,bands,nDeptos:Object.keys(deptos).length,nTurnos:Object.keys(turnos).length,cols:{sal:kSal,cls:kCls,dep:kDep,tur:kTur}};
+}
+function renderTressSummary(t){
+  const s=t.summary,b=s.bands;
+  const avg=x=>x.n?('$'+Math.round(x.sum/x.n).toLocaleString()):'—';
+  const box=el('<div></div>');
+  box.appendChild(el('<div class="small" style="margin-bottom:6px">✅ <b>'+t.file+'</b> · cargado '+t.date+' · '+s.total+' empleados activos · '+s.nDeptos+' departamentos · '+s.nTurnos+' turnos</div>'));
+  box.appendChild(el('<table class="fam" style="border:none;padding:0"><thead><tr><th>Banda</th><th>Empleados</th><th>Salario diario prom.</th><th>Impacto esperado</th></tr></thead><tbody>'+
+    '<tr><td><b>DL</b> (mano de obra directa)</td><td class="mono">'+b.dl.n+'</td><td class="mono">'+avg(b.dl)+'</td><td><span class="vd bad">Mayor impacto</span></td></tr>'+
+    '<tr><td><b>IDL</b> ($900 – $2,500)</td><td class="mono">'+b.idl.n+'</td><td class="mono">'+avg(b.idl)+'</td><td><span class="vd warn">Con impacto</span></td></tr>'+
+    '<tr><td><b>Gerencial / directivo</b> (≥ $3,000)</td><td class="mono">'+b.ger.n+'</td><td class="mono">'+avg(b.ger)+'</td><td><span class="vd ok">Sin impacto</span></td></tr>'+
+    (b.otros.n?'<tr><td>Sin clasificar</td><td class="mono">'+b.otros.n+'</td><td class="mono">'+avg(b.otros)+'</td><td class="small">revisar columnas</td></tr>':'')+
+    '</tbody></table>'));
+  box.appendChild(el('<div class="note" style="margin-top:8px">Este resumen es preliminar y vive solo en este dashboard. Para el <b>PDF de impacto financiero por cliente</b> (tiempo extra vs plantilla por banda, con full-burden), comparte este mismo archivo en la sesión de análisis y se genera el documento auditable.</div>'));
+  return box;
+}
+
 function refreshDetail(c){const ov=document.querySelector('.ov');if(ov){const fresh=detailEl(c);ov.replaceWith(fresh);}}
 
 
 /* ---------- ruta estratégica sugerida (por cliente) ---------- */
 function routeCard(c){
-  const card=el('<div class="card"><h3>🧭 Ruta estratégica sugerida</h3></div>');
+  const card=el('<div class="card"><h3>🧭 Ruta estratégica</h3></div>');
   const maxH=Math.max(0,...c.shifts.map(s=>+s.weeklyHours||0));
   const gap=Math.max(0,maxH-40);
   const anyLong=c.shifts.some(s=>(+s.weeklyHours||0)/( +s.daysPerWeek||5)>=10);
@@ -985,7 +1062,7 @@ function jcEval(st){
 function jornadaCalcCard(c,d){
   if(!JC_STATE[c.id])JC_STATE[c.id]=jcDefault();
   const st=JC_STATE[c.id];
-  const card=el('<div class="card"><h3>🧮 Calculadora de jornada legal — arma la propuesta del cliente</h3><div class="small" style="margin-bottom:8px">Captura día por día (soporta L-J, viernes corto, 3x4, fines de semana). La calculadora computa en vivo si la jornada es continua o discontinua, la salida real, la clasificación y el veredicto legal 2027-2030 con fundamento en la LFT.</div></div>');
+  const card=el('<div class="card"><h3>🧮 Calculadora de jornada legal — arma el horario para analizarlo</h3><div class="small" style="margin-bottom:8px">Captura día por día (soporta L-J, viernes corto, 3x4, fines de semana). La calculadora computa en vivo si la jornada es continua o discontinua, la salida real, la clasificación y el veredicto legal 2027-2030 con fundamento en la LFT.</div></div>');
   const ctl=el('<div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:8px"></div>');
   const mk=(lbl,html)=>{const w=el('<label class="small" style="display:flex;align-items:center;gap:6px">'+lbl+'</label>');w.appendChild(el(html));return w;};
   const codeI=el('<input type="text" style="max-width:110px" value="'+st.code+'"/>');codeI.oninput=e=>{st.code=e.target.value;};
@@ -1073,7 +1150,7 @@ function jornadaCalcCard(c,d){
 }
 function fld(label,key,type,val,c){const w=el('<div class="fld"><label>'+label+'</label></div>');const i=el('<input type="'+type+'"/>');i.value=val;i.oninput=e=>{c[key]=e.target.value;persistDebounced(c);};w.appendChild(i);return w;}
 function fldPre(label,key,val,c,pre,isFactor){const w=el('<div class="fld"><label>'+label+'</label><div class="pre"><span>'+pre+'</span></div></div>');const i=el('<input type="number" step="'+(isFactor?'0.01':'0.01')+'"/>');i.value=val;i.oninput=e=>{c[key]=e.target.value===''?(isFactor?0.35:null):+e.target.value;persistDebounced(c);computeIfOpen(c);};w.querySelector('.pre').appendChild(i);return w;}
-function tdInput(c,i,key,val,type,w){const td=el('<td></td>');const inp=el('<input type="'+type+'" style="max-width:'+w+'px"/>');inp.value=val;inp.oninput=e=>{c.shifts[i][key]=type==='number'?(e.target.value===''?'':+e.target.value):e.target.value;persistDebounced(c);computeIfOpen(c);};td.appendChild(inp);return td;}
+function tdInput(c,i,key,val,type,w,cb){const td=el('<td></td>');const inp=el('<input type="'+type+'" style="max-width:'+w+'px"/>');inp.value=val;inp.oninput=e=>{c.shifts[i][key]=type==='number'?(e.target.value===''?'':+e.target.value):e.target.value;persistDebounced(c);computeIfOpen(c);if(cb)cb();};td.appendChild(inp);return td;}
 function computeIfOpen(c){const d=document.querySelector('.draw');if(d)computeBlocks(c,d);}
 let pdt=null;function persistDebounced(c){clearTimeout(pdt);pdt=setTimeout(()=>persist(c),500);}
 function persist(c){saveClient(c);}
