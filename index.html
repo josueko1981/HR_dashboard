@@ -677,13 +677,13 @@ function strategyEl(){
 
   p3.appendChild(b3); w.appendChild(p3);
 
-  // Cierre: la recomendación llega después de construir el razonamiento, no antes
-  w.appendChild(reco);
-
   // Anexo: supuestos y referencia legal, condensados en la misma guía
   const anx=el('<div style="margin:6px 0 10px;font-size:13px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.5px">Anexo · Supuestos y referencia legal</div>');
   w.appendChild(anx);
   w.appendChild(assumpEl());
+
+  // Cierre absoluto: la recomendación llega después de todo el razonamiento y la referencia
+  w.appendChild(reco);
 
   return w;
 }
@@ -700,11 +700,6 @@ function assumpEl(){
   p2.appendChild(el('<table><tbody><tr><td>Por trabajador</td>'+YEARS.map(y=>'<td class="num">'+OTCAP[y]+' h ('+y+')</td>').join('')+'</tr></tbody></table>'));
   wrap.appendChild(p2);
   // burden default editor
-  const p3=el('<div class="panel"><div class="ph"><h2>Factor de carga social (full-burden)</h2><span class="hint">Default aplicado a clientes nuevos; editable por cliente</span></div></div>');
-  const b3=el('<div style="padding:14px 16px"></div>');
-  b3.appendChild(el('<div class="note">El <b>full-burden</b> suma sobre el efectivo: IMSS patronal (según prima de riesgo y SBC), INFONAVIT 5%, SAR/Retiro 2%, ISN estatal (~1.8–3% según estado) y provisiones (aguinaldo, prima vacacional). Se modela como un <b>factor único editable por cliente</b> porque la prima de riesgo y el SBC reales los tiene cada supervisor. Default 35%.</div>'));
-  b3.appendChild(el('<div class="small" style="margin-top:10px">Costo por hora extra doble = (salario diario ÷ horas/día nueva) × 2 × (1 + factor). Costo por plaza nueva/año = salario diario × 7 × (1 + factor) × 52.</div>'));
-  p3.appendChild(b3);wrap.appendChild(p3);
   return wrap;
 }
 
